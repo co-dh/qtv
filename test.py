@@ -28,16 +28,20 @@ def align_cells(
     return [header_row] + data_rows
 
 def render_display(
-    screen: curses.window,  # curses window object
-    data: List[List[str]],  # pre-aligned rows
+    screen: curses.window,
+    data: List[List[str]],
     highlight_row: int,
     highlight_col: int
 ) -> None:
-    """Draw table with current highlight position."""
+    """Draw table with row/column highlighting."""
     max_y, max_x = screen.getmaxyx()
     screen.clear()
     
-    # Draw visible rows
+    # Initialize colors
+    curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)    # Row highlight
+    curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)  # Column highlight
+    curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK) # Intersection
+    
     for y, row in enumerate(data[:max_y-1]):
         x = 0
         for col_idx, cell in enumerate(row):
@@ -45,24 +49,38 @@ def render_display(
             if x + cell_width > max_x:
                 break
             
-            # Highlight if current cell matches
-            attr = curses.A_REVERSE if (y == highlight_row and col_idx == highlight_col) else 0
-            screen.addstr(y, x, cell[:max_x-x], attr)
-            x += cell_width + 1  # +1 for column spacing
+            # Determine highlight type
+            is_hl_row = y == highlight_row
+            is_hl_col = col_idx == highlight_col
+            attr = 0
+            
+            if is_hl_row and is_hl_col:
+                attr = curses.color_pair(3)
+            elif is_hl_row:
+                attr = curses.color_pair(1)
+            elif is_hl_col:
+                attr = curses.color_pair(2)
+            
+            try:
+                screen.addstr(y, x, cell[:max_x-x], attr)
+            except curses.error:
+                pass
+            x += cell_width + 1
     
     # Status bar
-    status = f" Row: {highlight_row+1}/{len(data)} Col: {highlight_col+1}/{len(data[0])} "
+    status = f" {highlight_row+1}/{len(data)}行 {highlight_col+1}/{len(row)}列 "
     screen.addstr(max_y-1, 0, status[:max_x], curses.A_REVERSE)
     screen.refresh()
 
 def display_table(file_path: str) -> None:
-    """Interactive table viewer for large CSV/Parquet files."""
+    """Interactive table viewer with highlighting."""
     screen = curses.initscr()
     try:
         curses.noecho()
         curses.cbreak()
         screen.keypad(True)
         curses.curs_set(0)
+        curses.start_color()
         
         # Initial load
         max_y, _ = screen.getmaxyx()
@@ -70,7 +88,7 @@ def display_table(file_path: str) -> None:
         widths = calculate_column_widths(df.columns, df.rows())
         data = align_cells(df.columns, df.rows(), widths)
         
-        hr, hc = 0, 0  # highlight row/col indexes
+        hr, hc = 0, 0  # Highlight coordinates
         
         while True:
             render_display(screen, data, hr, hc)
@@ -81,7 +99,7 @@ def display_table(file_path: str) -> None:
             elif key == curses.KEY_DOWN: hr = min(len(data)-1, hr+1)
             elif key == curses.KEY_LEFT: hc = max(0, hc-1)
             elif key == curses.KEY_RIGHT: hc = min(len(widths)-1, hc+1)
-            elif key in (ord('q'), 27): break  # quit on Q or ESC
+            elif key in (ord('q'), 27): break
             
     finally:
         curses.endwin()
