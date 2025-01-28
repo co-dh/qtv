@@ -30,6 +30,7 @@ def align_cells(
 def render_display(
     screen: curses.window,
     data: List[List[str]],
+    total_rows: int,
     highlight_row: int,
     highlight_col: int
 ) -> None:
@@ -68,7 +69,7 @@ def render_display(
             x += cell_width + 1
     
     # Status bar
-    status = f" {highlight_row+1}/{len(data)}行 {highlight_col+1}/{len(row)}列 "
+    status = f" {highlight_row+1}/{total_rows}Row {highlight_col+1}/{len(row)}Col "
     screen.addstr(max_y-1, 0, status[:max_x], curses.A_REVERSE)
     screen.refresh()
 
@@ -81,7 +82,13 @@ def display_table(file_path: str) -> None:
         screen.keypad(True)
         curses.curs_set(0)
         curses.start_color()
-        
+
+        # Get total rows without loading entire file
+        if file_path.endswith('.parquet'):
+            total_rows = pl.scan_parquet(file_path).select(pl.count()).collect().item()
+        else:
+            total_rows = pl.scan_csv(file_path).select(pl.count()).collect().item()
+
         # Initial load
         max_y, _ = screen.getmaxyx()
         df = load_dataframe(file_path, max_rows=max_y-1)
@@ -91,7 +98,7 @@ def display_table(file_path: str) -> None:
         hr, hc = 0, 0  # Highlight coordinates
         
         while True:
-            render_display(screen, data, hr, hc)
+            render_display(screen, data, total_rows, hr, hc)
             key = screen.getch()
             
             # Navigation
