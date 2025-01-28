@@ -1,6 +1,6 @@
 import curses
 
-def draw_table(data):
+def draw_table(data, highlight_row=None, highlight_col=None):
     if not data:
         return
 
@@ -9,32 +9,70 @@ def draw_table(data):
         curses.noecho()
         curses.cbreak()
         stdscr.keypad(True)
-        stdscr.clear()
+        curses.start_color()
         
-        # Get terminal dimensions
+        # VisiData-like color scheme
+        curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)    # Cursor row
+        curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)  # Cursor column
+        curses.init_pair(3, curses.COLOR_MAGENTA, curses.COLOR_BLACK) # Both
+        
+        stdscr.clear()
         max_y, max_x = stdscr.getmaxyx()
         
-        # Draw each row
         for y, row in enumerate(data):
-            if y >= max_y - 1:  # Leave room for cursor
+            if y >= max_y:
                 break
                 
-            # Join columns with single space and truncate to screen width
-            row_str = " ".join(str(cell) for cell in row)
-            truncated = row_str[:max_x-1]  # Ensure we don't hit edge of screen
-            
-            try:
-                stdscr.addstr(y, 0, truncated)
-            except curses.error:
-                pass  # Handle edge cases quietly
-            
+            current_x = 0
+            for col_idx, cell in enumerate(row):
+                if current_x >= max_x:
+                    break
+                
+                # Determine highlighting
+                is_highlight_row = (highlight_row is not None and y == highlight_row)
+                is_highlight_col = (highlight_col is not None and col_idx == highlight_col)
+                color_pair = 0
+                
+                if is_highlight_row and is_highlight_col:
+                    color_pair = 3
+                elif is_highlight_row:
+                    color_pair = 1
+                elif is_highlight_col:
+                    color_pair = 2
+                
+                # Convert cell to string and calculate display length
+                cell_str = str(cell)
+                cell_len = len(cell_str)
+                
+                # Truncate cell if needed
+                remaining_width = max_x - current_x
+                if remaining_width <= 0:
+                    break
+                    
+                display_cell = cell_str[:remaining_width]
+                attr = curses.color_pair(color_pair) if color_pair else curses.A_NORMAL
+                
+                try:
+                    stdscr.addstr(y, current_x, display_cell, attr)
+                except curses.error:
+                    pass
+                
+                # Move position and add space separator
+                current_x += cell_len
+                if current_x < max_x:
+                    try:
+                        stdscr.addstr(y, current_x, ' ')
+                    except curses.error:
+                        pass
+                    current_x += 1
+
         stdscr.refresh()
-        stdscr.getch()  # Wait for keypress before exiting
+        stdscr.getch()
     
     finally:
         curses.endwin()
 
-# Example usage with pre-aligned data
+# Example usage
 if __name__ == "__main__":
     pre_aligned_data = [
         ["Name   ", "Age ", "Country      "],
@@ -42,4 +80,5 @@ if __name__ == "__main__":
         ["Bob    ", "25  ", "Canada       "],
         ["Charlie", "45  ", "Mexico       "]
     ]
-    draw_table(pre_aligned_data)
+    # Highlight row 1 (Alice's row) and column 2 (Country)
+    draw_table(pre_aligned_data, highlight_row=1, highlight_col=2)
