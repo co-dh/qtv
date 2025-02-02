@@ -1,4 +1,13 @@
 import curses as C
+
+import curses
+
+def initColors(stdscr):
+    if C.has_colors():
+        C.use_default_colors()
+        for i in range(256):
+            C.init_pair(i + 1, i, -1)  # Foreground: i, Background: default
+
 def init():
     stdscr = C.initscr()
 
@@ -18,16 +27,11 @@ def init():
     # module -- the error return from C start_color() is ignorable.
     try:
         C.start_color()
+        initColors(stdscr)
     except:
         pass
 
     C.curs_set(0) # no blinking cursor
-    C.init_pair(1, C.COLOR_CYAN, 0)
-    C.init_pair(2, C.COLOR_YELLOW, 0)
-    C.init_pair(3, C.COLOR_MAGENTA, 0)
-    stdscr.erase()
-    stdscr.refresh()
-
     return stdscr
 
 def fini(stdscr):

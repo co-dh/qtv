@@ -1,5 +1,28 @@
 #!/Users/dh/q/m64/q
-// te.q - Table data definition
+k)align:{{(|/#:''x)$/:x}(,$!x),$[#*r:.Q.s2'. x:.Q.sw@+x;+r;()]}
+/highlight header, current row and current column
+/x: [[str]] aligned table. cr,cc: current row/column
+rend:{[x;cr;cc]xs: -1_ 0,(+\)1+count each x 0; raze til[count x]rend1[x;xs;cr;cc]/:\:til count x 0 }
+rend1:{[t;xs;cr;cc;r;c]a:$[cr=r; Attr`A_REVERSE; c=cc; bor[colorPair 232; Attr`A_BOLD]; 0]; (r;xs c;t[r;c];a)}
+bor:{0b sv (|/)0b vs/:x,y} /bitwise or
+\l pykx.q
+.pykx.setdefault "raw"
+\l te.p
+C: .pykx.import[`curses]
+colorPair: C[`:color_pair;<]
+Attr  : .pykx.get[`getAttr;<][];Key:  .pykx.get[`getKey;<][]
+/{x set' .pykx.get x}`init`fini`
+stdscr: .pykx.get[`init][]; .z.exit:{[x].pykx.get[`fini]stdscr}
+
+addstr:stdscr[`:addstr;<];erase: stdscr[`:erase][];refresh:stdscr[`:refresh][];getmaxyx:stdscr[`:getmaxyx;<]
+lg: neg hopen `:/tmp/log
+onKey:{[c;yx]$[`KEY_DOWN=k:Key?c; cr::(yx[0]-1)&cr+1
+              ;k=`KEY_UP; cr::0|cr-1 
+              ;k=`KEY_LEFT; cc::0|cc-1
+              ;k=`KEY_RIGHT; cc::(count[cols t]-1)&cc+1
+              ];yx}
+display:{[yx]erase`; rows: rend[yx[0] sublist align t; cr; cc]; {addstr[x 0;x 1; x 2; x 3];} each rows; refresh`}
+
 t:([] 
   id:1+til 20;
   name:`Alice`Bob`Charlie`David`Eve`Frank`Grace`Hank`Ivy`Jack`Kara`Liam`Mia`Nora`Oscar`Paul`Quinn`Rose`Sam`Tina;
@@ -7,60 +30,11 @@ t:([]
   salary:20?50000.0+til 30000;
   years_of_service:20?til 15
  );
-
-/give table t, return 2d array of string of same width at each column.
-k)align:{{(|/#:''x)$/:x}(,$!x),$[#*r:.Q.s2'. x:.Q.sw@+x;+r;()]}
-
-/highlight header, current row and current column
-/x: [[str]] aligned table. cr,cc: current row/column
-rend:{[x;cr;cc] 
-    ; xs: -1_ 0,(+\)1+count each x 0 /x coordinates
-    ; raze til[count x]rend1[x;xs;cr;cc]/:\:til count x 0
-    }
-
-rend1:{[t;xs;cr;cc;r;c]
-    ; a:$[cr=r; Attr`A_REVERSE; 0]
-    ; (r;xs c;t[r;c];a)
-    }
-
-\l pykx.q
-\l te.p
-
-.pykx.setdefault "raw"
-Attr: .pykx.get[`getAttr; <][]
-Key: .pykx.get[`getKey; <][]
-
-cr:0
-cc:0
-Key`KEY_DOWN
-
-stdscr: .pykx.get[`init][]
-.z.exit:{[x].pykx.get[`fini]stdscr}
-addstr:stdscr[`:addstr;<]
-erase: stdscr[`:erase][]
-refresh:stdscr[`:refresh][]
-getmaxyx:stdscr[`:getmaxyx;<]
-
-lg: neg hopen `:/tmp/log
-onKey:{[c]
-    $[`KEY_DOWN=k:Key?c; cr+::1; k=`KEY_UP; cr-::1]
-    }
-    
-display:{[]
-    ; erase`
-    ; yx: getmaxyx[] 
-    ; rows: rend[yx[0] sublist align t; cr; cc]
-    ; {addstr[x 0;x 1; x 2; x 3];} each rows
-    ; refresh`
-    }
-    
-display[0]
-while["q"<>c:stdscr[`:getch][]`; onKey[c]; display[]] 
+cr:0;cc:0
+ 
+display getmaxyx[]    
+while["q"<>c:stdscr[`:getch][]`;display onKey[c]getmaxyx[]] 
 exit 0
-/
-
-
-/exit 0
 /
 What's the interface between render and kdb?
 the render knows:
@@ -69,18 +43,3 @@ the render knows:
     w,h: screen width/height
 
 the q code need to return an array of [y,x,txt, attr] to be called by addstr
-\
-/
-/r0: 1; cr:2; cc: 1; w: 50; h:10 
-getCmd:{[r0;cr;cc;w;h]
-   h sublist r0 _ t 
-
-
-p)import curses
-.pykx.qeval"dir(curses)"
-ev: .pykx.qeval
-Attr: ev "{x:getattr(curses,x) for x in dir(curses) if x.startswith('A_')}"
-Key: ev "{x:getattr(curses,x) for x in dir(curses) if x.startswith('KEY_')}"
-.pykx.get[`stdscr]    
-nc: .pykx.import `curses
-nc`:wrapper
