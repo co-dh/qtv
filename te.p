@@ -2,7 +2,7 @@ import curses as C
 
 import curses
 
-def initColors(stdscr):
+def initColors():
     if C.has_colors():
         C.use_default_colors()
         for i in range(256):
@@ -27,7 +27,7 @@ def init():
     # module -- the error return from C start_color() is ignorable.
     try:
         C.start_color()
-        initColors(stdscr)
+        initColors()
     except:
         pass
 
