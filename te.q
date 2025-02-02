@@ -1,14 +1,11 @@
 #!/Users/dh/q/m64/q
-\l pykx.q
-.pykx.setdefault "raw"
-C: .pykx.import`curses
+\l p.q
+C: .p.import`curses 
 color_pair: C[`:color_pair;<]
 
 \l te.p
-Attr  : .pykx.get[`getAttr;<][];Key:  .pykx.get[`getKey;<][]
+Attr  : .p.get[`getAttr;<][];Key:  .p.get[`getKey;<][]
 /stdscr need to be a python foreign object, so no <
-stdscr: .pykx.get[`init][]; .z.exit:{[x].pykx.get[`fini]stdscr}
-{x set stdscr[hsym x;<]}each`addstr`erase`refresh`getmaxyx`getch
 
 k)align:{{(|/#:''x)$/:x}(,$!x),$[#*r:.Q.s2'. x:.Q.sw@+x;+r;()]}
 /x: [[str]] aligned table. cr,cc: current row/column
@@ -32,6 +29,8 @@ t:([]
 / the render state of the table t:  cr/cc, r0: first row to display.
 cr:0;cc:0
  
+stdscr: .p.get[`init][]; .z.exit:{[x].p.get[`fini]stdscr}
+{x set stdscr[hsym x;<]}each`addstr`erase`refresh`getmaxyx`getch
 display getmaxyx[]    
 while["q"<>c:getch[];display onKey[c]getmaxyx[]] 
 exit 0
