@@ -12,11 +12,16 @@ t:([]
 k)align:{{(|/#:''x)$/:x}(,$!x),$[#*r:.Q.s2'. x:.Q.sw@+x;+r;()]}
 
 /highlight header, current row and current column
+/x: [[str]] aligned table. cr,cc: current row/column
 rend:{[x;cr;cc] 
-    ; xs: -1_ 0,(+\)1+count each x 0
-    ; raze til[count x]{[t;xs;cr;cc;r;c](r;xs c;t[r;c];0) }[x;xs;cr;cc]/:\:til count x 0
+    ; xs: -1_ 0,(+\)1+count each x 0 /x coordinates
+    ; raze til[count x]rend1[x;xs;cr;cc]/:\:til count x 0
     }
 
+rend1:{[t;xs;cr;cc;r;c]
+    ; a:$[cr=r; Attr`A_REVERSE; 0]
+    ; (r;xs c;t[r;c];a)
+    }
 
 \l pykx.q
 \l te.p
@@ -24,16 +29,33 @@ rend:{[x;cr;cc]
 .pykx.setdefault "raw"
 Attr: .pykx.get[`getAttr; <][]
 Key: .pykx.get[`getKey; <][]
-rows: rend[15#align t; 2; 0]
 
-.z.exit:{[x].pykx.get[`fini]stdscr}
+cr:0
+cc:0
+Key`KEY_DOWN
+
 stdscr: .pykx.get[`init][]
-stdscr[`:erase][]`
+.z.exit:{[x].pykx.get[`fini]stdscr}
 addstr:stdscr[`:addstr;<]
-{addstr[x 0;x 1; x 2];} each rows;
-stdscr[`:refresh][]`
+erase: stdscr[`:erase][]
+refresh:stdscr[`:refresh][]
+getmaxyx:stdscr[`:getmaxyx;<]
 
-while["q"<>c:stdscr[`:getch][]`; 1+1] 
+lg: neg hopen `:/tmp/log
+onKey:{[c]
+    $[`KEY_DOWN=k:Key?c; cr+::1; k=`KEY_UP; cr-::1]
+    }
+    
+display:{[]
+    ; erase`
+    ; yx: getmaxyx[] 
+    ; rows: rend[yx[0] sublist align t; cr; cc]
+    ; {addstr[x 0;x 1; x 2; x 3];} each rows
+    ; refresh`
+    }
+    
+display[0]
+while["q"<>c:stdscr[`:getch][]`; onKey[c]; display[]] 
 exit 0
 /
 
