@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 import curses
-import pdb
 from pykx import q
+q('\\l te.q')
+q('setAttr', {x:getattr(curses,x) for x in dir(curses) if x.startswith('A_')})
+q('setKey', {x:getattr(curses,x) for x in dir(curses) if x.startswith('KEY_')})
 
 def draw_table(stdscr):
-    q('\\l te.q')
-    
-    # Get table structure from q
-    headers = q('cols t').py()
-    rows = q('t').py()
-    
     # Setup curses
     curses.curs_set(0) # no blinking cursor
 
@@ -20,29 +16,15 @@ def draw_table(stdscr):
     # Main loop
     while True:
         stdscr.erase()
-        max_y, max_x = stdscr.getmaxyx()
-        
-        # Calculate column widths
-        col_width = (max_x - 4) // len(headers)
+        rows = q('rend[15#align t;2;0]').py()
         
         # Draw headers
-        stdscr.addstr(0, 0, " " * max_x, curses.color_pair(1))
-        x = 2
-        for h in headers:
-            header_text = str(h)[:col_width-2].ljust(col_width-2)
-            stdscr.addstr(0, x, header_text, curses.color_pair(1))
-            x += col_width
+        for a in rows:
+            stdscr.addstr(a[0],a[1],a[2])
         
-        # Draw rows
-        for row_idx, row in enumerate(rows[:max_y-2], 1):
-            x = 2
-            for col in row:
-                cell_content = str(col)[:col_width-2].ljust(col_width-2)
-                stdscr.addstr(row_idx, x, cell_content)
-                x += col_width
-        
+        max_y, max_x = stdscr.getmaxyx()
         # Status bar
-        stdscr.addstr(max_y-1, 0, f"Press Q to quit | Columns: {len(headers)} | Rows: {len(rows)}", curses.A_REVERSE)
+        stdscr.addstr(max_y-1, 0, f"Press Q to quit | Columns: {len(rows[0])} | Rows: {len(rows)}", curses.A_REVERSE)
         stdscr.refresh()
         
         # Input handling
