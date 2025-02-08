@@ -15,22 +15,23 @@ rend1:{[t;xs;cr;cc;r;c] a:$[0=r;Attr`A_UNDERLINE;0]; a:bor[a;$[cr=r-1; Attr`A_RE
 rendCell: rend1
 bor:{0b sv (|/)0b vs/:x,y} /bitwise or
 lg: {x -3!y; y}neg[hopen `:/tmp/te.log]
-ft:{.[`st;0,`t    ;x cc`]}
-fc:{.[`st;0,`t,cc`;x]}
+ft:{.[`st;0,`t    ;x CC[]]}
+fc:{.[`st;0,`t,CC[];x]}
 convert:{c: "c"$getch[]; if[lower[c] in .Q.t; fc[$[c;]]]}
 onKey:{[cnt] /return 0 to quit
     ; c:$[0=cnt;0;getch[]]; yx::getmaxyx[]; s:st[0];k:Attr?c
     ; $[k=`KEY_DOWN;UpDown[1] ;k=`KEY_UP;UpDown[-1]
        ;c=534;UpDown yx[0]-2  ;c=575;UpDown neg yx[0]-2
-       ;k=`KEY_LEFT;CC -1+s`cc;k=`KEY_RIGHT;CC 1+s`cc
+       ;k=`KEY_LEFT;C -1;k=`KEY_RIGHT;C 1
        ;c="[";ft[xasc] ;c="]";ft[xdesc]
-       ;c="d";if[1<count cols s`t; ft delcol cc[]; CC s`cc]
+       ;c="d";if[1<count cols s`t; ft delcol C[]; C 0]
        ;c="F"; Freq[s] ;c="q"; :Pop[s]
        ;c="$"; convert[]
       ]
     ; 1  
     }
-cc:{s:st 0; cols[s`t]s`cc}; CC:{.[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|x]}
+CC:{cols[st[0]`t]C[]}    
+C:{$[null x;st[0]`cc; .[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|C[]+x]]}
 delcol:{![y;();0b;enlist x]}; Pop:{st::1_st;count st}
 CT:{count T[]}
 R:{$[null x; st[0;`cr]; [.[`st;0,`cr;:;n:(CT[]-1)&0|x]; lg n]]} /getter and setter of current row
@@ -40,7 +41,7 @@ R0:{$[null x; st[0;`r0]; .[`st;0,`r0;:; 0|(CT[]-yx[0]-2)&x]]}
 UpDown:{mr:yx[0]-3; r:R x+R`; $[0>s:r-r0:R0[];R0 r0+s; s>mr;R0 r0+s-mr]} /mr: max index of rows.
 display:{[x]; /lg (`display;`x;x)
     ;if[x=0; :x] ;erase[] ; s:st 0
-    ;rows:rend[align (yx[0]-2) sublist s[`r0]_ s`t;s[`cr]-s`r0;s`cc]
+    ;rows:rend[align (yx[0]-2) sublist s[`r0]_ s`t;s[`cr]-s`r0;C[]]
     ;{addstr[x 0;x 1;x 2;x 3]}each rows ;refresh[];1}
 
 /t: flip (`$string[til 16])!flip 16 16#til 256
