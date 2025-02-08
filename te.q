@@ -30,12 +30,11 @@ onKey:{[cnt] /return 0 to quit
       ]
     ; 1  
     }
-CC:{cols[st[0]`t]C[]}    
-C:{$[null x;st[0]`cc; .[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|C[]+x]]}
+C:{$[null x;st[0]`cc; .[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|C[]+x]]}; CC:{cols[st[0]`t]C[]}    
+R :{$[null x; st[0;`cr]; [.[`st;0,`cr;:;n:(CT[]-1)&0|x];n]]}
+R0:{$[null x; st[0;`r0]; .[`st;0,`r0;:; 0|(CT[]-yx[0]-2)&x]]}
 delcol:{![y;();0b;enlist x]}; Pop:{st::1_st;count st}
 CT:{count T[]}
-R:{$[null x; st[0;`cr]; [.[`st;0,`cr;:;n:(CT[]-1)&0|x]; lg n]]} /getter and setter of current row
-R0:{$[null x; st[0;`r0]; .[`st;0,`r0;:; 0|(CT[]-yx[0]-2)&x]]}
 /(1+cr-r0)=sreen y in [1, y-2] => cr-r0 in [0,y-3]
 /r0: index of first row in t that displayed on screen. in [0; CT[]
 UpDown:{mr:yx[0]-3; r:R x+R`; $[0>s:r-r0:R0[];R0 r0+s; s>mr;R0 r0+s-mr]} /mr: max index of rows.
@@ -58,14 +57,14 @@ stdscr:init[]
 stdscr import/:`erase`refresh`getmaxyx`getch`keypad`addstr;
 keypad[1] /convert escape sequences to int
 cnt:0
-.Q.trp[{while[display onKey cnt; cnt+:1]}; (); {fini stdscr; show x; -1@.Q.sbt y;}] 
+.Q.trp[{while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;}] 
 fini stdscr
 /
-[ ] nav: page up/down,  
+[x] nav: page up/down,  
 [ ] column selector
 [ ] rename
 [ ] move to c = 10, * next row with current cell value 
-[ ] type convert
+[x] type convert
 [ ] .j.k
 
 row
