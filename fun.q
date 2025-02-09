@@ -15,8 +15,8 @@ R0:{$[null x; st[0;`r0];  .[`st;0,`r0;:; 0|(CT[]-`.[`yx][0]-2)&x]]}
 
 .kf.d:{if[1<count cols T[]; ft delcol; C 0]} /del current column
 .kf.q:{st::1_st;count st}; .kf[`$"$"]:{Convert[]}
-.kf.KEY_DOWN:{Down  1}; .kf.KEY_LEFT :{C -1}; .kf[`$"["]:{ft[xasc]}
-.kf.KEY_UP  :{Down -1}; .kf.KEY_RIGHT:{C  1}; .kf[`$"]"]:{ft[xdesc]}
+.kf.KEY_DOWN:{Down  1}; .kf.KEY_LEFT :{C -1}; .kf[`$"["]:{ft[xasc]}; .kf.kDN5:{Down     yx[0]-2}
+.kf.KEY_UP  :{Down -1}; .kf.KEY_RIGHT:{C  1}; .kf[`$"]"]:{ft[xdesc]};.kf.kUP5:{Down neg yx[0]-2}
 .kf.F:{[] /frequency 
     ; t:0!desc?[T[];(); d!d:enlist CC[];enlist[`Cnt]!enlist(count;`i)]
     ; t:update Pct: 100*Cnt%sum t`Cnt from t
@@ -24,19 +24,9 @@ R0:{$[null x; st[0;`r0];  .[`st;0,`r0;:; 0|(CT[]-`.[`yx][0]-2)&x]]}
     ; d:`r0`cr`cc`type`t!(0;0;0;`Freq;t)
     ; st::enlist[d],st
     }
-.kf.kDN5:{Down     yx[0]-2}
-.kf.kUP5:{Down neg yx[0]-2}
 /
 ///////// color map
 t: flip (`$string[til 16])!flip 16 16#til 256
 rendColor:{[t;xs;cr;cc;r;c] (r; xs c;t[r;c]; color_pair c+r*16)}
 rendCell: rendColor
 
-    ; $[k=`KEY_DOWN;UpDown[1] ;k=`KEY_UP;UpDown[-1]
-       ;c=534;UpDown yx[0]-2  ;c=575;UpDown neg yx[0]-2
-       ;k=`KEY_LEFT;C -1;k=`KEY_RIGHT;C 1
-       ;c="[";ft[xasc] ;c="]";ft[xdesc]
-       ;c="d";if[1<count cols s`t; ft delcol; C 0]
-       ;c="F"; Freq[s] ;c="q"; :Pop[s]
-       ;c="$"; convert[]
-      ]
