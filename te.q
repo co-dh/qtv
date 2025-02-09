@@ -24,17 +24,13 @@ onKey:{[cnt] /return 0 to quit
        ;c=534;UpDown yx[0]-2  ;c=575;UpDown neg yx[0]-2
        ;k=`KEY_LEFT;C -1;k=`KEY_RIGHT;C 1
        ;c="[";ft[xasc] ;c="]";ft[xdesc]
-       ;c="d";if[1<count cols s`t; ft delcol C[]; C 0]
+       ;c="d";if[1<count cols s`t; ft delcol; C 0]
        ;c="F"; Freq[s] ;c="q"; :Pop[s]
        ;c="$"; convert[]
       ]
     ; 1  
     }
-C:{$[null x;st[0]`cc; .[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|C[]+x]]}; CC:{cols[st[0]`t]C[]}    
-R :{$[null x; st[0;`cr]; [.[`st;0,`cr;:;n:(CT[]-1)&0|x];n]]}
-R0:{$[null x; st[0;`r0]; .[`st;0,`r0;:; 0|(CT[]-yx[0]-2)&x]]}
 delcol:{![y;();0b;enlist x]}; Pop:{st::1_st;count st}
-CT:{count T[]}
 /(1+cr-r0)=sreen y in [1, y-2] => cr-r0 in [0,y-3]
 /r0: index of first row in t that displayed on screen. in [0; CT[]
 UpDown:{mr:yx[0]-3; r:R x+R`; $[0>s:r-r0:R0[];R0 r0+s; s>mr;R0 r0+s-mr]} /mr: max index of rows.
@@ -42,22 +38,18 @@ display:{[x]; /lg (`display;`x;x)
     ;if[x=0; :x] ;erase[] ; s:st 0
     ;rows:rend[align (yx[0]-2) sublist s[`r0]_ s`t;s[`cr]-s`r0;C[]]
     ;{addstr[x 0;x 1;x 2;x 3]}each rows ;refresh[];1}
-
-/t: flip (`$string[til 16])!flip 16 16#til 256
-/rendColor:{[t;xs;cr;cc;r;c] (r; xs c;t[r;c]; color_pair c+r*16)}
-/rendCell: rendColor
-
-/t: update I:i from("SSIJJ"; enlist csv)0:`:csv/1000.csv
+    
 t: update I:i from("*****"; enlist csv)0:`:csv/1000.csv
 / the render state of the table t:  cr/cc, r0: first row to display. multiple render states formed a stack
 st:enlist `r0`cr`cc`type`t!(0;0;0;`;t)
-T:{st[0]`t}
 
-stdscr:init[]
-stdscr import/:`erase`refresh`getmaxyx`getch`keypad`addstr;
-keypad[1] /convert escape sequences to int
-cnt:0
-.Q.trp[{while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;}] 
+T:{st[0]`t}; CT:{count T[]}
+C:{$[null x;st[0]`cc; .[`st;0,`cc;:;(count[cols st[0]`t]-1)&0|C[]+x]]}; CC:{cols[st[0]`t]C[]}    
+R :{$[null x; st[0;`cr]; [.[`st;0,`cr;:;n:(CT[]-1)&0|x];n]]}
+R0:{$[null x; st[0;`r0];  .[`st;0,`r0;:; 0|(CT[]-yx[0]-2)&x]]}
+
+stdscr:init[]; stdscr import/:`erase`refresh`getmaxyx`getch`keypad`addstr; keypad[1] /convert escape sequences to int
+cnt:0; .Q.trp[{while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;}] 
 fini stdscr
 /
 [x] nav: page up/down,  
@@ -66,6 +58,7 @@ fini stdscr
 [ ] move to c = 10, * next row with current cell value 
 [x] type convert
 [ ] .j.k
+[ ] open csv
 
 row
 [ ] filter
