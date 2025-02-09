@@ -1,5 +1,5 @@
 \l p.q
-x set' .p.import each x:`builtins`curses;
+{x set' .p.import each x:`builtins`curses;}[]
 import:{y set x[hsym y;<]}
 builtins import/:`getattr`dir;
 curses import/:`color_pair`has_colors`use_default_colors`init_pair`echo`noecho`cbreak`nocbreak`endwin`start_color`curs_set`initscr`keyname;
