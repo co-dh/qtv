@@ -21,11 +21,11 @@ push:{d:`r0`cr`cc`type`t!(0;0;0;x;y); st::enlist[d],st}
 /exec first i from t where ec_count~\:CV`, i>R`    "
 Se:{f:(>;<)!(first;last); R ?[T[]; (((\:;~);CC`;ctype[]$reg"/");(x;`i;R`));();(f x;`i)]; down 0}
 ctype:{neg type T[]CC`}; 
-fzf:{`:/tmp/fzf.in 0: x; r:first system "cat /tmp/fzf.in|fzf --print-query|tail -n1"; clear[]; curs_set 0; r}
-input:{fzf string[CC`],/:("=5";"<3";" like \"*foo*\"")}
+fzf:{`:/tmp/fzf.in 0: x; r:first system "cat /tmp/fzf.in|fzf --print-query --bind ctrl-e:replace-query --header ^E |tail -n1"; clear[]; curs_set 0; r}
+input:{fzf enlist $[0h=ctype[]; string[CC`]," like \"",CV[], "\""; string[CC`],"=",string CV[] ]}
 inputT:{ctype[]$input`}
 .kf[`$"/" ]:{reg["/" ]:inputT`;Se[>]}; .kf.n:{Se[>]}; .kf.N:{Se[<]}; .kf[`$"*"]:{reg["/"]:CV`;Se[>]}
-.kf[`$"\\"]:{reg["\\"]:inputT`;push[`]t:?[T[]; enlist parse reg"\\";0b;()]} 
+.kf[`$"\\"]:{reg["\\"]:input`;push[`]t:?[T[]; enlist parse reg"\\";0b;()]} 
 .kf[`$"^"]:{ft xcol[enlist[CC`]!enlist[`$input`]]} 
 .kf.D:{push[`]T[]}; .kf.S:{if[2>count st;:()]; @[`st;0 1;:;st 1 0]}; .kf.M:{push[`m]0!meta T[]}
 
