@@ -25,7 +25,7 @@ fzf:{`:/tmp/fzf.in 0: x; r:first system "cat /tmp/fzf.in|fzf --print-query --bin
 input:{fzf enlist $[0h=ctype[]; string[CC`]," like \"",CV[], "\""; string[CC`],"=",string CV[] ]}
 inputT:{ctype[]$input`}
 .kf[`$"/" ]:{reg["/" ]:inputT`;Se[>]}; .kf.n:{Se[>]}; .kf.N:{Se[<]}; .kf[`$"*"]:{reg["/"]:CV`;Se[>]}
-.kf[`$"\\"]:{reg["\\"]:input`;push[`]t:?[T[]; enlist parse reg"\\";0b;()]} 
+.kf[`$"\\"]:{reg["\\"]:input`;push[`]t:?[T[]; parse each ","vs reg"\\";0b;()]} 
 .kf[`$"^"]:{ft xcol[enlist[CC`]!enlist[`$input`]]} 
 .kf.D:{push[`]T[]}; .kf.S:{if[2>count st;:()]; @[`st;0 1;:;st 1 0]}; .kf.M:{push[`m]0!meta T[]}
 
