@@ -40,17 +40,3 @@ inputT:{ctype[]$input`}
 // aggregate CC[] by keyed column. aggregate can be count, sum, avg, dev etc
 agg:{f:value fzf string `count`sum`avg`dev`min`max; ?[t;();b!b:kc#cols t; enlist[c]!enlist(f;c:CC`)]}
 .kf.b:{push[`agg]agg[]}
-/
-
-///////// color map
-t: flip (`$string[til 16])!flip 16 16#til 256
-rendColor:{[t;xs;cr;cc;r;c] (r; xs c;t[r;c]; color_pair c+r*16)}
-rendCell: rendColor
-
-"P"$string floor t[`Time]%1000000
-"n"$t`Time
-//// forth
-what should be at the forth level? every q function? or table functions?
-the F language knows nothing about the stack. 
-The interpreter knows the stack. it run F string 
-
