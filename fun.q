@@ -18,7 +18,7 @@ R0:{r0::0|x&CT[]-yx[0]-2}
 .kf.KEY_UP  :{down -1}; .kf.KEY_RIGHT:{C1  1}; .kf[`$"]"]:{sort[xdesc]};.kf[`$"^U"]: .kf.kUP5:{down neg yx[0]-2}
 .kf.G:{down CT[]}; .kf.g:{down neg CT[]};
 .kf.F:{[]u:0!desc?[t;(); d!d:enlist CC[];enlist[`Cnt]!enlist(count;`i)]
-    ; push[`Freq]update Bar: `$floor[Pct]#\:"#" from update Pct: 100*Cnt%sum t`Cnt from u}
+    ; push[`Freq]update Bar: `$floor[Pct]#\:"#" from update Pct: 100*Cnt%sum u`Cnt from u}
 push:{st::enlist[GL!value each GL],st;GL set'(0;0;0;0;x;y) }
 /exec first i from t where ec_count~\:CV`, i>R`    "
 Se:{f:(>;<)!(first;last);R ?[t; (((\:;~);CC`;ctype[]$reg"/");(x;`i;cr));();(f x;`i)]; down 0}

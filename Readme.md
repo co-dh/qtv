@@ -19,7 +19,7 @@ col:
     [X] delete
     [X] copy
     [ ] rename
-    [ ] xasc, xdesc
+    [X] xasc, xdesc
 table
     [ ] pipe sql
     [^] dup/swap 

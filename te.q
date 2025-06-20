@@ -17,8 +17,9 @@ onKey:{[cnt] yx::getmaxyx[]; .kf[kn::`$"c"$$[0=cnt;"";keyname getch[]]][]; kn}
 Addstr:{[y;x;s;a] if[(y>=yx[0]) or (yx[1]<=x+count s); :()]; .[addstr;(y;x;s;a);{[y;x;e]lg(y;x;e)}[y;x]]} 
 msg:""; commify:{","sv reverse 3 cut reverse string x}
 sb:{s:neg[-10+yx 1]$msg,("/"sv -3 sublist "/"vs fn),string[kn], " ",string[cr],"/",commify CT`; Addstr[yx[0]-1;0;s;.cl.st]; refresh[]}
-display:{[x]if[(kn=`Q)or 0=count st;:0];erase[]; 
-    ;(Addstr .)each rend[align r0 _(r0+yx[0]-2)sublist 0!t;cr-r0;cc];sb[];refresh[];1}
-.Q.trp[{cnt:0; while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;}] 
+display:{[x]if[(kn=`Q)or 0=count st;H 15; :0]
+    ;erase[];(Addstr .)each rend[align r0 _(r0+yx[0]-2)sublist 0!t;cr-r0;cc];sb[];refresh[];1}
+H:{system "c ",string[x]," ",first system "tput cols";}
+.Q.trp[{cnt:0; while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;H 15}] 
 fini stdscr
 
