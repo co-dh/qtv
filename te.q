@@ -30,9 +30,9 @@ R0:{r0::0|x&CT[]-yx[0]-2} //set R0: the first row on screen
 .kf.KEY_DOWN:{down  1}; .kf.KEY_LEFT :{C1 -1}; .kf[`$"^D"]: .kf.kDN5:{down     yx[0]-2}
 .kf.KEY_UP  :{down -1}; .kf.KEY_RIGHT:{C1  1}; .kf[`$"^U"]: .kf.kUP5:{down neg yx[0]-2}
 .kf.G:{down CT[]}; .kf.g:{down neg CT[]};
+.kf[`$"/" ]:{reg["/" ]:inputT`;Se[>]};  .kf.n:{Se[>]};  .kf.N:{Se[<]};  .kf[`$"*"]:{reg["/"]:CV`;Se[>]}
 /input
-fzf:{`:/tmp/fzf.in 0: x; r:first system "cat /tmp/fzf.in|fzf --print-query --bind ctrl-e:replace-query --header ^E |tail -n1"
-    ;clear[]; curs_set 0; r}
+fzf:{`:/tmp/fzf.in 0: x; r:first system "sh -c 'fzf --print-query</tmp/fzf.in || true' " ;clear[]; curs_set 0; r}
 input:{fzf enlist $[0h=ctype[]; string[CC`]," like \"",CV[], "\""; string[CC`],"=",string CV[] ]}
 inputT:{ctype[]$input`}
 /main
