@@ -1,4 +1,3 @@
-/
 [ ] Forth. interpreter apply f on current element of stack
 [ ] separate render layer 
 [x] nav: page up/down,  G, g

@@ -2,8 +2,9 @@
 rel:{` sv first[` vs hsym`$get[x]6],y}
 {system "l ",1_string rel[{}]x} each `curse.q`fun.q
 k)align:{{(|/#:''x)$/:x}(,$!x),$[#*r:.Q.s2'. x:.Q.sw@+x;+r;()]}
-rend:{[t;cr;cc] /render string table t at current row and column
+rend:{[t;cr;cc] /render string table t with select row(cr) and column(cc)
     ; xs:-1_0,(+\)1+count each t 0 //x of each column
+    ; xs,: last[xs]+count last t[0]
     ; if[xs[cc+1]>yx 1; shift:xs first where xs>xs[cc+1]-yx 1; xs-: shift] 
     ; raze til[count t]rend1[t;xs;cr;cc]/:\:til count t 0}
 lg: {x -3!(y;z); z}neg[hopen `:/tmp/te.log]
@@ -18,8 +19,7 @@ Addstr:{[y;x;s;a] if[(y>=yx[0]) or (yx[1]<=x+count s); :()]; .[addstr;(y;x;s;a);
 msg:""; commify:{","sv reverse 3 cut reverse string x}
 CT:{count t}; 
 sb:{s:neg[-10+yx 1]$msg, "|",("/"sv -3 sublist "/"vs fn),string[kn], " ",string[cr],"/",commify CT`; Addstr[yx[0]-1;0;s;.cl.st]; refresh[]}
-display:{[x]if[(kn=`Q)or 0=count st;H 15; :0]
-    ;erase[];(Addstr .)each rend[align r0 _(r0+yx[0]-2)sublist 0!t;cr-r0;cc];sb[];refresh[];1}
+display:{[x]if[(kn=`Q)or 0=count st;H 15; :0] ;erase[]; (Addstr .)each rend[align r0 _(r0+yx[0]-2)sublist t;cr-r0;cc];sb[];refresh[];1}
 H:{system "c ",string[x]," ",first system "tput cols";}
 /navigator
 C1:{cc::(-1+count cols t)&0|x+cc}; //current column +=x 
@@ -30,6 +30,9 @@ R0:{r0::0|x&CT[]-yx[0]-2} //set R0: the first row on screen
 .kf.KEY_DOWN:{down  1}; .kf.KEY_LEFT :{C1 -1}; .kf[`$"^D"]: .kf.kDN5:{down     yx[0]-2}
 .kf.KEY_UP  :{down -1}; .kf.KEY_RIGHT:{C1  1}; .kf[`$"^U"]: .kf.kUP5:{down neg yx[0]-2}
 .kf.G:{down CT[]}; .kf.g:{down neg CT[]};
+ctype:{neg type t CC`}; 
+/exec first i from t where ec_count~\:CV`, i>R`    "
+Se:{f:(>;<)!(first;last);R ?[t; (((\:;~);CC`;ctype[]$reg"/");(x;`i;cr));();(f x;`i)]; down 0}
 .kf[`$"/" ]:{reg["/" ]:inputT`;Se[>]};  .kf.n:{Se[>]};  .kf.N:{Se[<]};  .kf[`$"*"]:{reg["/"]:CV`;Se[>]}
 /input
 fzf:{`:/tmp/fzf.in 0: x; r:first system "sh -c 'fzf --print-query</tmp/fzf.in || true' " ;clear[]; curs_set 0; r}

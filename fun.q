@@ -21,9 +21,6 @@ cp:{nc:`$string[x],"1"; i:1+cols[y]?x; ((i#cols[y]),nc,i _ cols y)xcols ![y;();0
 .kf.F:{[]u:0!desc?[t;(); d!d:enlist CC[];enlist[`Cnt]!enlist(count;`i)]
     ; push[`Freq]update Bar: `$floor[Pct]#\:"#" from update Pct: 100*Cnt%sum u`Cnt from u}
 push:{st::enlist[GL!value each GL],st;GL set'(0;0;0;0;x;y) }
-/exec first i from t where ec_count~\:CV`, i>R`    "
-Se:{f:(>;<)!(first;last);R ?[t; (((\:;~);CC`;ctype[]$reg"/");(x;`i;cr));();(f x;`i)]; down 0}
-ctype:{neg type t CC`}; 
 .kf[`$"\\"]:{reg["\\"]:input`;push[`]t:?[T[]; parse each ","vs reg"\\";0b;()]} 
 .kf.D:{push[`]t}; 
 .kf.S:{if[1>count st;:()];n:st[0]; st::enlist[GL!value each GL],1_st; GL set'n}; 
