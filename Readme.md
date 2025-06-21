@@ -11,6 +11,10 @@
 [ ] .j.k
 [ ] nyse, t as symbol, date as drop down
 [X] horizontal scroll
+[X] separate command that impact display(navigator) vs content
+[ ] rewrite in k?
+[ ] namespace? if not, hard to use with other code
+[ ] history, replay, easily define new function.
 row:
     [ ] esc in input
     [X] filter expression 
