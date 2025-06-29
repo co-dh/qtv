@@ -35,11 +35,11 @@ ctype:{neg type t CC`};
 Se:{f:(>;<)!(first;last);R ?[t; (((\:;~);CC`;ctype[]$reg"/");(x;`i;cr));();(f x;`i)]; down 0}
 .kf[`$"/" ]:{reg["/" ]:inputT`;Se[>]};  .kf.n:{Se[>]};  .kf.N:{Se[<]};  .kf[`$"*"]:{reg["/"]:CV`;Se[>]}
 /input
-fzf:{`:/tmp/fzf.in 0: x; r:last system "sh -c 'fzf --print-query</tmp/fzf.in || true' " ;clear[]; curs_set 0; r}
-input:{fzf enlist $[0h=ctype[]; string[CC`]," like \"",CV[], "\""; string[CC`],"=",string CV[] ]}
+fzf:{`:/tmp/fzf.in 0: x; r:last system "sh -c 'fzf --print-query</tmp/fzf.in --bind ctrl-e:replace-query|| true' " ;clear[]; curs_set 0; r}
+unenum:{$[20h=type x;value x; x]}
+input:{f:$[0h=ctype[];" like ";"="]; fzf(string[CC`],f),/:.Q.s1 each unenum asc distinct t CC`}
 inputT:{ctype[]$input`}
 .kf[`$"!"]:{n:$[(c:CC`) in k:kc#cols t;k except c;k,c]; kc::count n; t::n xcols t} //if x in key columns, remove it, else add it 
-
 /main
 .Q.trp[{cnt:0; while[display onKey cnt; cnt+:1]};(); {fini stdscr; show x; -1@.Q.sbt y;H 15}] 
 fini stdscr

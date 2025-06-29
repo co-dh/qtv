@@ -38,6 +38,7 @@ table
     [ ] table id 
     [ ] enter on Frequency 
 [ ] dir sheet
+[ ] guess csv column type by q regex
 
 
 ///////// color map
